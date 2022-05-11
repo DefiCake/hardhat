@@ -112,7 +112,16 @@ function assertArgsArraysEqual(
     actualArgs.length
   );
   for (let index = 0; index < expectedArgs.length; index++) {
-    if (expectedArgs[index] instanceof Uint8Array) {
+    if (typeof expectedArgs[index] === "function") {
+      context.assert(
+        expectedArgs[index](),
+        `The user-defined predicate for event argument #${
+          index + 1
+        } returned false`
+        // no need for a negated message, since we disallow mixing .not. with
+        // .withArgs
+      );
+    } else if (expectedArgs[index] instanceof Uint8Array) {
       new Assertion(actualArgs[index]).equal(
         utils.hexlify(expectedArgs[index])
       );

@@ -264,6 +264,25 @@ describe("INTEGRATION: Reverted with custom error", function () {
             )
             .withArgs(1, "bar")
         ).to.be.rejectedWith(AssertionError, "expected 'foo' to equal 'bar'");
+
+        await expect(matchers.revertWithCustomErrorWithUintAndString(1, "foo"))
+          .to.be.revertedWithCustomError(
+            matchers,
+            "CustomErrorWithUintAndString"
+          )
+          .withArgs(() => true, "foo");
+
+        await expect(
+          expect(matchers.revertWithCustomErrorWithUintAndString(1, "foo"))
+            .to.be.revertedWithCustomError(
+              matchers,
+              "CustomErrorWithUintAndString"
+            )
+            .withArgs(() => false, "foo")
+        ).to.be.rejectedWith(
+          AssertionError,
+          "The user-defined predicate for custom error argument #1 returned false"
+        );
       });
 
       it("should check the length of the args", async function () {

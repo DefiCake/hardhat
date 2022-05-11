@@ -160,7 +160,16 @@ export async function revertedWithCustomErrorWithArgs(
 
   for (const [i, actualArg] of Object.entries(actualArgs) as any) {
     const expectedArg = expectedArgs[i];
-    if (Array.isArray(expectedArg)) {
+    if (typeof expectedArg === "function") {
+      context.assert(
+        expectedArg(),
+        `The user-defined predicate for custom error argument #${
+          parseInt(i, 10) + 1
+        } returned false`
+        // no need for a negated message, since we disallow mixing .not. with
+        // .withArgs
+      );
+    } else if (Array.isArray(expectedArg)) {
       // we use [...x] here to convert the array-like values used by ethers to
       // represent structs into proper arrays
       new Assertion([...actualArg]).to.deep.equal([...expectedArg]);

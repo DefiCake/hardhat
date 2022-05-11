@@ -426,6 +426,23 @@ describe(".to.emit (contract events)", () => {
             'Expected "WithTwoUintArgs" event to have 1 argument(s), but it has 2'
           );
         });
+
+        it("Should pass when a user-defined predicate argument returns true", async function () {
+          await expect(contract.emitTwoUints(1, 2))
+            .to.emit(contract, "WithTwoUintArgs")
+            .withArgs(() => true, 2);
+        });
+
+        it("Should fail when a user-defined predicate argument returns false", async function () {
+          await expect(
+            expect(contract.emitTwoUints(1, 2))
+              .to.emit(contract, "WithTwoUintArgs")
+              .withArgs(() => false, 2)
+          ).to.be.eventually.rejectedWith(
+            AssertionError,
+            "The user-defined predicate for event argument #1 returned false"
+          );
+        });
       });
     });
 
